@@ -1,2 +1,2 @@
 # tracingdocker
-Showcase of java webapps beeing traced by ELK running in docker
+ Showcase of java webapps beeing traced by ELK running in docker
