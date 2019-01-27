@@ -14,4 +14,10 @@ Server A : AggreagationAndMultiplactionDivider, (A+B)/(CxD) yet only knows how t
 Server B : Multiplicator . Knows how to do the CxD part
 Server C : Aggregator. Know how to do the A+B part
 
-It would be interesting to inject some delay (sleep) and see how the bottleneck switches 
+It would be interesting to inject some delay (sleep) and see how the bottleneck switches
+
+
+I like the consistency of docker. If I use docker to build the code, using the maven wrapper, the person (or CI system) running this will have no need to install java, maven, and will consistently work in any environment that just supports Docker.
+
+So the code is build into an docker image by using docker build
+An we just run it with docker run . The dilema now is mount the volume of the src or just copy the source?
