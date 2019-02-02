@@ -1,0 +1,58 @@
+version: '3'
+services:
+
+    demoservice:
+        build: webapps/demo/
+        ports:
+            - "8080:8080"
+
+################ Infrastructure here #################
+    elasticsearch:
+        build: tracing/elasticsearch/
+        ports:
+            - "9200:9200"
+        environment:
+            - LOGSPOUT=ignore
+    logstash:
+        build: tracing/logstash/
+        environment:
+            - INPUT_TCP_PORT=5000
+            - INPUT_UDP_PORT=5000
+            - INPUT_HTTP_PORT=5001
+            - ELASTICSEARCH_HOST=elasticsearch
+            - ELASTICSEARCH_PORT=9200
+            - LOGSTASH_DEBUG=true
+            - LOGSPOUT=ignore
+        ports:
+            - "5000:5000"
+            - "5001:5001"
+            - "9600:9600"
+        depends_on:
+            - elasticsearch
+
+    kibana:
+        build: tracing/kibana/
+        environment:
+            - ELASTICSEARCH_URL=http://elasticsearch:9200
+            - LOGSPOUT=ignore
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
+
+    logspout:
+        image: gliderlabs/logspout:v3.2.6
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        command: multiline+syslog://logstash:5000
+        depends_on:
+            - logstash
+
+    zipkin:
+        build: tracing/zipkin/
+        environment:
+            - ES_HOSTS=http://elasticsearch:9200
+            - ES_INDEX=traces
+            - ZIPKIN_UI_LOGS_URL=http://localhost:5601/app/kibana#/discover/d0682f20-e0e9-11e7-9c68-0b9a0f0c183c?_g=(refreshInterval:(display:Off,pause:!f,value:0),time:(from:now-30d,mode:quick,to:now))&_a=(columns:!(X-B3-TraceId,app_name,level,message),filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,index:'logs-*',key:X-B3-TraceId,negate:!f,params:(query:'trace',type:phrase),type:phrase,value:'trace'),query:(match:(X-B3-TraceId:(query:'{traceId}',type:phrase))))),index:'logs-*',interval:auto,query:(language:lucene,query:''),sort:!('@timestamp',desc))
+        ports:
+            - 9411:9411
