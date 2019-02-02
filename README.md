@@ -1,5 +1,33 @@
 # tracingdocker
- Showcase of java webapps beeing traced by ELK running in docker
+
+## to run
+chmod +x  ./start-all.sh
+./start-all.sh
+go for one coffee ... or two
+
+## test
+
+### demo (helloworld)
+hit localhost:8080
+
+### greetin delegator (delegates the hello to demo)
+hit localhost:8081
+
+### kibana
+check localhost:5601
+
+set indepatern logstash*
+pick timestamp as timestamp
+go to discover, last hour
+you should have some logs there, for different containers
+
+### zipkin
+got to http://localhost:9411
+some traces there too
+
+
+
+## Showcase of java webapps beeing traced by ELK running in docker
 
 centralized logs with ELK, logspout
 
